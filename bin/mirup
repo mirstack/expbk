@@ -2,4 +2,69 @@
 
 #%MIRUP_ROOT%
 MIRUP_ROOT=${MIRUP_ROOT-"."}
-ansible-playbook -s -c local -i $MIRUP_ROOT/local $MIRUP_ROOT/up.yml
+VERSION="0.0.1"
+
+usage()
+{
+    cat >&2 <<EOF
+NAME
+
+  mirup - Git repos updater.
+
+SYNOPSIS
+
+  mirup [-h] [-v] [-d] -r REPO -o OUTPUT
+
+DESCRIPTION
+
+  Updates repository REPO in given OUTPUT directory.
+
+OPTIONS
+
+  -h         Display this help dialog.
+  -d         Debug mode.
+  -r REPO    Repository name.
+  -o OUTPUT  Repo's estination directory.
+  -v         Print current version.
+
+EXAMPLES
+
+    \$ mirup -r __matrix__ -o /opt/mir/matrix
+    \$ mirup -r my-app -o /opt/apps/my-app
+
+EOF
+}
+
+repo=
+dest=
+
+while getopts "r:o:hv" OPTION; do
+    case $OPTION in
+        h)
+            usage
+            exit 0
+            ;;
+        v)
+            echo "mirup v$VERSION $(uname -mo)"
+            exit 0
+            ;;
+        r)
+            repo=$OPTARG
+            ;;
+        o)
+            dest=$OPTARG
+            ;;
+        d)
+            DEBUG="-d"
+            ;;
+        ?|*)
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+ansible-playbook \
+    -s -c local $DEBUG \
+    -e "repo_name=$repo repo_dest=$dest" \
+    -i $MIRUP_ROOT/local $MIRUP_ROOT/up.yml
