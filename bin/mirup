@@ -76,6 +76,8 @@ if test x$dest = x ; then
     exit 1
 fi
 
+export ANSIBLE_NOCOWS=1
+
 ansible-playbook \
     -s -c local $DEBUG \
     -e "repo_name=$repo repo_dest=$dest" \
