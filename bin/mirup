@@ -64,6 +64,18 @@ while getopts "r:o:hv" OPTION; do
     esac
 done
 
+if test x$repo = x ; then
+    echo "$0: missing mandatory option -- r" >&2
+    usage
+    exit 1
+fi
+
+if test x$dest = x ; then
+    echo "$0: missing mandatory option -- o" >&2
+    usage
+    exit 1
+fi
+
 ansible-playbook \
     -s -c local $DEBUG \
     -e "repo_name=$repo repo_dest=$dest" \
