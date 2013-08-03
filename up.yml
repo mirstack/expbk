@@ -1,0 +1,13 @@
+#-------------------------------------------------------------------------------
+# file: up.yml
+#
+# Default playbook that executes repository updates.
+#-------------------------------------------------------------------------------
+- hosts: all
+  tasks:
+    - name: "update given git repository in provided destination"
+      git:
+        repo: "ssh://git@git:{{ repo_name }}.git"
+        dest: "{{ repo_dest }}"
+        update: yes
+        version: master

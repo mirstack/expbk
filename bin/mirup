@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#%MIRUP_ROOT%
+MIRUP_ROOT=${MIRUP_ROOT-"."}
+ansible-playbook -s -c local -i $MIRUP_ROOT/local $MIRUP_ROOT/up.yml
