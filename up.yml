@@ -7,7 +7,7 @@
   tasks:
     - name: "update given git repository in provided destination"
       git:
-        repo: "ssh://git@git:{{ repo_name }}.git"
+        repo: "git@git:{{ repo_name }}.git"
         dest: "{{ repo_dest }}"
         update: yes
         version: master
