@@ -10,5 +10,4 @@ install:
 	install bin/mir* -m 0755 -t $(prefix)/bin
 	sed -i 's~%#MIRUP_ROOT%~MIRUP_ROOT=$(mirup_root)~' $(prefix)/bin/mir*
 	install -d -m 0755 $(mirup_root)
-	install up.yml -t $(mirup_root)
-	install local -t $(mirup_root)
+	install up.yml local -m 0644 -t $(mirup_root)
