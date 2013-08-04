@@ -72,6 +72,8 @@ if test x$repo = x || test x$dest = x ; then
     exit 1
 fi
 
+echo "INFO: Performing update of '$repo' in '$dest'"
+
 ansible-playbook$DEBUG -c local -e "repo_name=$repo repo_dest=$dest" \
     -s -i $MIRUP_ROOT/local $MIRUP_ROOT/up.yml >$VERBOSE
 
