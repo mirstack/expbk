@@ -70,7 +70,7 @@ while true; do
 
     if test x$repo = x || test x$dest = x ; then
         echo "ERROR: Invalid input!"
-        exit 1
+        continue
     fi
 
     export ANSIBLE_NOCOWS=1
