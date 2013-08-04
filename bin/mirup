@@ -31,7 +31,7 @@ OPTIONS
 
 EXAMPLES
 
-    \$ tail -f /tmp/input | uncat | mirup
+    \$ tail -f /tmp/input | mirup
 
 EOF
 }
@@ -65,25 +65,24 @@ while getopts "r:o:hv" OPTION; do
     esac
 done
 
-while true; do
-    read repo dest
+read repo dest
 
-    if test x$repo = x || test x$dest = x ; then
-        echo "ERROR: Invalid input!"
-        continue
-    fi
+if test x$repo = x || test x$dest = x ; then
+    echo "ERROR: Invalid input!"
+    exit 1
+fi
 
-    export ANSIBLE_NOCOWS=1
+export ANSIBLE_NOCOWS=1
 
-    ansible-playbook \
-        -s -c local $DEBUG \
-        -e "repo_name=$repo repo_dest=$dest" \
-        -i $MIRUP_ROOT/local $MIRUP_ROOT/up.yml \
-        >$VERBOSE
+ansible-playbook \
+    -s -c local $DEBUG \
+    -e "repo_name=$repo repo_dest=$dest" \
+    -i $MIRUP_ROOT/local $MIRUP_ROOT/up.yml \
+    >$VERBOSE
 
-    if test x$? = x0 ; then
-        echo "INFO: Repository '$repo' has been updated in '$dest'"
-    else
-        echo "ERROR: Couldn't update '$repo' in '$dest'"
-    fi
-done
+if test x$? = x0 ; then
+    echo "INFO: Repository '$repo' has been updated in '$dest'"
+else
+    echo "ERROR: Couldn't update '$repo' in '$dest'"
+    exit 1
+fi
