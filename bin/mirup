@@ -38,6 +38,8 @@ EOF
 
 VERBOSE=/dev/null
 
+>&2
+
 while getopts "r:o:hv" OPTION; do
     case $OPTION in
         h)
@@ -49,9 +51,11 @@ while getopts "r:o:hv" OPTION; do
             exit 0
             ;;
         d)
+            echo "INFO: Debug mode enabled"
             DEBUG="-d"
             ;;
         l)
+            echo "INFO: Running verbose"
             VERBOSE=/dev/stdout
             ;;
         ?|*)
@@ -61,11 +65,11 @@ while getopts "r:o:hv" OPTION; do
     esac
 done
 
-echo "INFO: Listening for repos updates on standard input." >&2
+while true; do
+    read repo dest
 
-while read repo dest; do
     if test x$repo = x || test x$dest = x ; then
-        echo "ERROR: Invalid input!" >&2
+        echo "ERROR: Invalid input!"
         exit 1
     fi
 
@@ -80,6 +84,6 @@ while read repo dest; do
     if test x$? = x0 ; then
         echo "INFO: Repository '$repo' has been updated in '$dest'"
     else
-        echo "ERROR: Couldn't update '$repo' in '$dest'" >&2
+        echo "ERROR: Couldn't update '$repo' in '$dest'"
     fi
 done
