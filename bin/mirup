@@ -2,7 +2,7 @@
 
 #%MIRUP_ROOT%
 MIRUP_ROOT=${MIRUP_ROOT-"."}
-VERSION="0.0.1"
+VERSION="0.1.0"
 
 usage()
 {
@@ -13,7 +13,7 @@ NAME
 
 SYNOPSIS
 
-  mirup [-h] [-v] [-d] -r REPO -o OUTPUT
+  mirup [-h] [-v] [-l] [-d]
 
 DESCRIPTION
 
@@ -24,9 +24,10 @@ DESCRIPTION
 
 OPTIONS
 
-  -h         Display this help dialog.
-  -d         Debug mode.
-  -v         Print current version.
+  -h  Display this help dialog.
+  -d  Debug mode.
+  -l  Print extra information.
+  -v  Print current version.
 
 EXAMPLES
 
@@ -34,6 +35,8 @@ EXAMPLES
 
 EOF
 }
+
+VERBOSE=/dev/null
 
 while getopts "r:o:hv" OPTION; do
     case $OPTION in
@@ -47,6 +50,9 @@ while getopts "r:o:hv" OPTION; do
             ;;
         d)
             DEBUG="-d"
+            ;;
+        l)
+            VERBOSE=/dev/stdout
             ;;
         ?|*)
             usage
@@ -67,4 +73,12 @@ export ANSIBLE_NOCOWS=1
 ansible-playbook \
     -s -c local $DEBUG \
     -e "repo_name=$repo repo_dest=$dest" \
-    -i $MIRUP_ROOT/local $MIRUP_ROOT/up.yml
+    -i $MIRUP_ROOT/local $MIRUP_ROOT/up.yml \
+    >$VERBOSE
+
+if test x$? = x0 ; then
+    echo "INFO: Repository has been updated"
+else
+    echo "ERROR: Something went wrong when updating the repo!"
+    exit 1
+fi
