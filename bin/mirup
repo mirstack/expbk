@@ -81,6 +81,5 @@ while read repo dest; do
         echo "INFO: Repository '$repo' has been updated in '$dest'"
     else
         echo "ERROR: Couldn't update '$repo' in '$dest'" >&2
-        exit 1
     fi
 done
