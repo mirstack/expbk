@@ -61,6 +61,8 @@ while getopts "r:o:hv" OPTION; do
     esac
 done
 
+echo "INFO: Listening for repos updates on standard input." >&2
+
 while read repo dest; do
     if test x$repo = x || test x$dest = x ; then
         echo "ERROR: Invalid input!" >&2
@@ -78,7 +80,7 @@ while read repo dest; do
     if test x$? = x0 ; then
         echo "INFO: Repository '$repo' has been updated in '$dest'"
     else
-        echo "ERROR: Couldn't update '$repo' in '$dest'"
+        echo "ERROR: Couldn't update '$repo' in '$dest'" >&2
         exit 1
     fi
 done
