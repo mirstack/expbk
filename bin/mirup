@@ -77,8 +77,8 @@ ansible-playbook \
     >$VERBOSE
 
 if test x$? = x0 ; then
-    echo "INFO: Repository has been updated"
+    echo "INFO: Repository '$repo' has been updated in '$dest'"
 else
-    echo "ERROR: Something went wrong when updating the repo!"
+    echo "ERROR: Couldn't update '$repo' in '$dest'"
     exit 1
 fi
