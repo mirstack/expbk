@@ -40,7 +40,7 @@ VERBOSE=/dev/null
 
 >&2
 
-while getopts "r:o:hv" OPTION; do
+while getopts "r:o:lhv" OPTION; do
     case $OPTION in
         h)
             usage
