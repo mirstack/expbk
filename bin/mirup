@@ -56,7 +56,7 @@ while getopts "r:o:hv" OPTION; do
             ;;
         l)
             echo "INFO: Running verbose"
-            VERBOSE=/dev/stdout
+            VERBOSE=/dev/stderr
             ;;
         ?|*)
             usage
