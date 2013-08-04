@@ -17,26 +17,23 @@ SYNOPSIS
 
 DESCRIPTION
 
-  Updates repository REPO in given OUTPUT directory.
+  Updates repository REPO in given OUTPUT directory. Both parameters
+  should be fed from the standard input in the following format:
+
+  REPO OUTPUT\n
 
 OPTIONS
 
   -h         Display this help dialog.
   -d         Debug mode.
-  -r REPO    Repository name.
-  -o OUTPUT  Repo's estination directory.
   -v         Print current version.
 
 EXAMPLES
 
-    \$ mirup -r __matrix__ -o /opt/mir/matrix
-    \$ mirup -r my-app -o /opt/apps/my-app
+    \$ tail -f /tmp/input | uncat | mirup
 
 EOF
 }
-
-repo=
-dest=
 
 while getopts "r:o:hv" OPTION; do
     case $OPTION in
@@ -48,12 +45,6 @@ while getopts "r:o:hv" OPTION; do
             echo "mirup v$VERSION $(uname -mo)"
             exit 0
             ;;
-        r)
-            repo=$OPTARG
-            ;;
-        o)
-            dest=$OPTARG
-            ;;
         d)
             DEBUG="-d"
             ;;
@@ -64,15 +55,10 @@ while getopts "r:o:hv" OPTION; do
     esac
 done
 
-if test x$repo = x ; then
-    echo "$0: missing mandatory option -- r" >&2
-    usage
-    exit 1
-fi
+read repo dest
 
-if test x$dest = x ; then
-    echo "$0: missing mandatory option -- o" >&2
-    usage
+if test x$repo = x || test x$dest = x ; then
+    echo "ERROR: Invalid input!" >&2
     exit 1
 fi
 
