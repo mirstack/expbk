@@ -1,8 +1,10 @@
 #!/bin/bash
 
+VERSION="0.1.0"
+
 #%MIRUP_ROOT%
 MIRUP_ROOT=${MIRUP_ROOT-"."}
-VERSION="0.1.0"
+ANSIBLE_NOCOWS=1
 
 usage()
 {
@@ -38,8 +40,6 @@ EOF
 
 VERBOSE=/dev/null
 
->&2
-
 while getopts "r:o:lhv" OPTION; do
     case $OPTION in
         h)
@@ -51,11 +51,11 @@ while getopts "r:o:lhv" OPTION; do
             exit 0
             ;;
         d)
-            echo "INFO: Debug mode enabled"
-            DEBUG="-d"
+            echo "INFO: Debug mode enabled" >&2
+            DEBUG=" -d"
             ;;
         l)
-            echo "INFO: Running verbose"
+            echo "INFO: Running verbose" >&2
             VERBOSE=/dev/stderr
             ;;
         ?|*)
@@ -68,21 +68,16 @@ done
 read repo dest
 
 if test x$repo = x || test x$dest = x ; then
-    echo "ERROR: Invalid input!"
+    echo "ERROR: Invalid input!" >&2
     exit 1
 fi
 
-export ANSIBLE_NOCOWS=1
-
-ansible-playbook \
-    -s -c local $DEBUG \
-    -e "repo_name=$repo repo_dest=$dest" \
-    -i $MIRUP_ROOT/local $MIRUP_ROOT/up.yml \
-    >$VERBOSE
+ansible-playbook$DEBUG -c local -e "repo_name=$repo repo_dest=$dest" \
+    -s -i $MIRUP_ROOT/local $MIRUP_ROOT/up.yml >$VERBOSE
 
 if test x$? = x0 ; then
     echo "INFO: Repository '$repo' has been updated in '$dest'"
 else
-    echo "ERROR: Couldn't update '$repo' in '$dest'"
+    echo "ERROR: Couldn't update '$repo' in '$dest'" >&2
     exit 1
 fi
