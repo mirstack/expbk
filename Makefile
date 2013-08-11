@@ -1,3 +1,5 @@
+PROJECT="up"
+
 -include ./config.make
 
 mirup_root=$(prefix)/lib/mirup

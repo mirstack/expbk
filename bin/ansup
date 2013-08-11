@@ -1,0 +1,158 @@
+#!/bin/bash
+
+VERSION="0.2.0"
+
+ANSIBLE_NOCOWS=1
+SCRIPT_DIR=./bin
+OUTPUT=/dev/stderr
+DEBUG_OUTPUT=/dev/null
+DEBUG=
+DIR=
+
+usage()
+{
+    cat <<EOF
+Usage:
+
+  ansup [-d] [-h] [-s] [-v] DIR
+
+Starts a program that listens for directives on standard input. When it
+receives any then executes appropriate ansible playbook from specified
+directory DIR.
+
+Options:
+
+  -d  Debug mode. Can be used twice for more verbose output..
+  -h  Display this help dialog.
+  -s  Silent mode.
+  -v  Print current version.
+
+For more information check 'man ansup'.
+EOF
+}
+
+log()
+{
+    echo "$@" >$OUTPUT
+}
+
+debug()
+{
+    echo "$@" >$DEBUG_OUTPUT
+}
+
+version()
+{
+    echo $VERSION >&1
+}
+
+init()
+{
+    while getopts "dhsv" OPTION; do
+        case $OPTION in
+            h)
+                usage
+                exit 0
+                ;;
+            v)
+                version
+                exit 0
+                ;;
+            d)
+                if [[ $DEBUG != "" ]]; then
+                    set -x
+                    continue
+                fi
+
+                DEBUG=' -v'
+                DEBUG_OUTPUT=/dev/stderr
+                debug "DEBUG -- debug mode enabled" >&2
+                ;;
+            s)
+                OUTPUT=/dev/null
+                ;;
+            ?|*)
+                usage
+                exit 1
+        esac
+    done
+
+    shift $(($OPTIND - 1))
+
+    case $# in
+        1)
+            DIR=$1
+            debug "DEBUG -- playbooks directory set to: $DIR"
+            ;;
+        0)
+            log "ERROR -- missing directory"
+            exit 1
+            ;;
+        *)
+            log "ERROR -- invalid number of arguments"
+            exit 1
+            ;;
+    esac
+}
+
+whereami()
+{
+    path="${BASH_SOURCE[0]}";
+
+    if [[ -h "$path" ]]; then
+        while [ -h "$path" ]; do
+            script_path=$(readlink "$path")
+        done
+    fi
+
+    echo $(dirname "$path"})
+}
+
+run_playbook()
+{
+    id="$1"
+    play="$DIR/$2.yml"
+    params="$3"
+    inventory="$SCRIPT_DIR/../lib/ansup/local"
+
+    if [[ ! -f $play ]]; then
+        log "ERROR -- no such playbook: $play"
+        return 1
+    fi
+
+    if [[ ! -f $inventory ]]; then
+        log "ERROR -- no such inventory: $inventory"
+        return 1
+    fi
+
+    debug "INFO -- [$id] performing play '$action' with arguments: $params"
+    ansible-playbook$DEBUG -c local -e "$params" -i "$inventory" "$play" 2>&1 | tee
+
+    if (( $? != 0 )); then
+        log "ERROR -- play $action:$id has failed"
+        return 1
+    fi
+
+    log "INFO -- play $action:$id has been finished successfully"
+    return 0
+}
+
+main()
+{
+    SCRIPT_DIR=$(whereami)
+
+    debug "DEBUG -- started in: $SCRIPT_DIR"
+    log "INFO -- using playbooks from: $DIR"
+
+    while read action params; do
+        if [[ $action == "" ]]; then
+            log "ERROR -- invalid operation received"
+            continue
+        fi
+
+        id=$(echo $(od -vAn -N4 -tu4 </dev/urandom))
+        run_playbook "$id" "$action" "$params"
+    done
+}
+
+init "$@" && main
