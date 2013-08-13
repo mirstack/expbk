@@ -1,0 +1,5 @@
+before_install:
+  - sudo apt-get install -qq bc
+
+script:
+  - make test
