@@ -3,3 +3,5 @@
 .env
 config.mk
 man/*
+pkg
+tmp

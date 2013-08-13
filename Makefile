@@ -8,7 +8,8 @@ all:
 	@echo Nothing to do...
 
 install:
-	@echo TODO...
+	install -d $(PREFIX)/bin
+	install -m 0755 bin/* $(PREFIX)/bin/
 
 install-man: install man
 	install -d $(PREFIX)/man
@@ -17,8 +18,12 @@ install-man: install man
 version:
 	sed -i 's/^VERSION=.*$$/VERSION="$(VERSION)"/' bin/ansup
 
-pack:
-	@echo TODO...
+pack: test version man
+	mkdir -p tmp/bin tmp/share/man/man1 pkg
+	cp bin/* tmp/bin/
+	cp man/*.1 tmp/share/man/man1/
+	cd tmp/ && $(ZIP) -r ../pkg/$(PROJECT)-$(VERSION)-$(MACHINE).zip bin share
+	rm -r tmp
 
 man:
 ifdef RONN
