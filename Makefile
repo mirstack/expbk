@@ -1,4 +1,4 @@
-PROJECT=ansup
+PROJECT=expbk
 VERSION=0.2.0
 MACHINE=unix-noarch
 
@@ -16,7 +16,7 @@ install-man: install man
 	install -m 0644 man/*.1.roff $(PREFIX)/share/man/man1/
 
 version:
-	sed -i 's/^VERSION=.*$$/VERSION="$(VERSION)"/' bin/ansup
+	sed -i 's/^VERSION=.*$$/VERSION="$(VERSION)"/' bin/expbk
 
 pack: test version man
 	mkdir -p tmp/bin tmp/share/man/man1 pkg

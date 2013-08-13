@@ -15,7 +15,7 @@ usage()
     cat <<EOF
 Usage:
 
-  ansup [-d] [-h] [-s] [-v] [-i INVENTORY] DIR
+  expbk [-d] [-h] [-s] [-v] [-i INVENTORY] DIR
 
 Starts a program that listens for directives on standard input. When it
 receives any then executes appropriate ansible playbook from specified
@@ -29,7 +29,7 @@ Options:
   -s            Silent mode.
   -v            Print current version.
 
-For more information check 'man ansup'.
+For more information check 'man expbk'.
 EOF
 }
 

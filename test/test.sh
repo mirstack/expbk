@@ -3,7 +3,7 @@
 PATH="./bin:$PATH"
 
 . ./test/assert.sh
-. ./test/test-ansup.sh
+. ./test/test-expbk.sh
 
 suite=$(typeset -F | sed 's/declare -f //' | grep '^test')
 
