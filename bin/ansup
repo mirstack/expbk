@@ -6,6 +6,7 @@ ANSIBLE_NOCOWS=1
 SCRIPT_DIR=./bin
 OUTPUT=/dev/stderr
 DEBUG_OUTPUT=/dev/null
+INVENTORY_FILE=
 DEBUG=
 DIR=
 
@@ -14,7 +15,7 @@ usage()
     cat <<EOF
 Usage:
 
-  ansup [-d] [-h] [-s] [-v] DIR
+  ansup [-d] [-h] [-s] [-v] [-i INVENTORY] DIR
 
 Starts a program that listens for directives on standard input. When it
 receives any then executes appropriate ansible playbook from specified
@@ -22,10 +23,11 @@ directory DIR.
 
 Options:
 
-  -d  Debug mode. Can be used twice for more verbose output..
-  -h  Display this help dialog.
-  -s  Silent mode.
-  -v  Print current version.
+  -d            Debug mode. Can be used twice for more verbose output..
+  -h            Display this help dialog.
+  -i INVENTORY  Ansible inventory file that should be used.
+  -s            Silent mode.
+  -v            Print current version.
 
 For more information check 'man ansup'.
 EOF
@@ -48,7 +50,7 @@ version()
 
 init()
 {
-    while getopts "dhsv" OPTION; do
+    while getopts "dhi:sv" OPTION; do
         case $OPTION in
             h)
                 usage
@@ -57,6 +59,10 @@ init()
             v)
                 version
                 exit 0
+                ;;
+            i)
+                INVENTORY_FILE="$OPTARG"
+                debug "DEBUG -- using inventory at: $INVENTORY_FILE"
                 ;;
             d)
                 if [[ $DEBUG != "" ]]; then
@@ -113,27 +119,31 @@ run_playbook()
     id="$1"
     play="$DIR/$2.yml"
     params="$3"
-    inventory="$SCRIPT_DIR/../lib/ansup/local"
+    inventory=
 
-    if [[ ! -f $play ]]; then
+    if [[ "$INVENTORY_FILE" != "" ]]; then
+        if [[ ! -f "$INVENTORY_FILE" ]]; then
+            log "ERROR -- inventory file not found: $INVENTORY_FILE"
+            return 1
+        fi
+
+        inventory=" -i $INVENTORY_FILE"
+    fi
+
+    if [[ ! -f "$play" ]]; then
         log "ERROR -- no such playbook: $play"
         return 1
     fi
 
-    if [[ ! -f $inventory ]]; then
-        log "ERROR -- no such inventory: $inventory"
-        return 1
-    fi
-
     debug "INFO -- [$id] performing play '$action' with arguments: $params"
-    ansible-playbook$DEBUG -c local -e "$params" -i "$inventory" "$play" 2>&1 | tee
+    ansible-playbook$DEBUG$inventory -c local -e "$params" "$play" 2>&1
 
     if (( $? != 0 )); then
         log "ERROR -- play $action:$id has failed"
         return 1
     fi
 
-    log "INFO -- play $action:$id has been finished successfully"
+    log "INFO -- play $action:$id finished successfully"
     return 0
 }
 
@@ -142,11 +152,11 @@ main()
     SCRIPT_DIR=$(whereami)
 
     debug "DEBUG -- started in: $SCRIPT_DIR"
-    log "INFO -- using playbooks from: $DIR"
+    debug "DEBUG -- using playbooks from: $DIR"
 
     while read action params; do
         if [[ $action == "" ]]; then
-            log "ERROR -- invalid operation received"
+            log "ERROR -- empty action received"
             continue
         fi
 
