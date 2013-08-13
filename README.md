@@ -1,6 +1,6 @@
 # expbk
 
-[![Build Status](https://travis-ci.org/mirstack/expbk.png?branch=master)](https://travis-ci.org/mirstack/ansup)
+[![Build Status](https://travis-ci.org/mirstack/expbk.png?branch=master)](https://travis-ci.org/mirstack/expbk)
 
 **Ansible playbooks executioner.**
 
