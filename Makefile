@@ -1,15 +1,33 @@
-PROJECT="up"
+PROJECT=ansup
+VERSION=0.2.0
+MACHINE=$(shell uname -sp | tr '[A-Z]' '[a-z]' | sed -e 's/\s/-/')
 
--include ./config.make
-
-mirup_root=$(prefix)/lib/mirup
+-include config.mk
 
 all:
-	-@echo ok...
+	@echo Nothing to do...
 
 install:
-	install -d $(prefix)/bin
-	install bin/mir* -m 0755 -t $(prefix)/bin
-	sed -i 's~#%MIRUP_ROOT%~MIRUP_ROOT=$(mirup_root)~' $(prefix)/bin/mir*
-	install -d -m 0755 $(mirup_root)
-	install up.yml local -m 0644 -t $(mirup_root)
+	@echo TODO...
+
+install-man: install man
+	install -d $(PREFIX)/man
+	install -m 0644 man/*.1.roff $(PREFIX)/share/man/man1/
+
+version:
+	sed -i 's/^VERSION=.*$$/VERSION="$(VERSION)"/' bin/ansup
+
+pack:
+	@echo TODO...
+
+man:
+ifdef RONN
+	$(RONN) --manual="Mir's $(PROJECT) manual" --organization='Mir' man/*.ronn
+else
+	@echo Package providing 'ronn' is not installed. Skipping man page docs.
+endif
+
+test:
+	$(BASH) ./test/test.sh
+
+.PHONY: all deps install test version pack man
