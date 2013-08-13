@@ -30,7 +30,24 @@ Run `install-man` instead of `install` if you want to have man pages installed a
 
 ## Usage
 
-...
+Given an example:
+
+    $ echo sync repo=bacon | ansup ~/playbooks
+
+It will execute `sync.yml` playbook located in `~/playbooks` directory, with
+extra variable `repo` set to `bacon`. Under the hood more or less following
+command will be executed:
+
+    $ ansible-playbook -s -c local -e "repo=bacon" ~/playbooks/sync.yml
+
+Use `-i` to specify custom inventory file:
+
+    $ ansup -i~/production ~/playbooks
+    
+If you want to turn the app into a continuously listening daemon then pipe it
+with other long running task, like `tail` for example:
+
+    $ tail -f /tmp/updates | ansup ~/playbooks
 
 ## Hacking
 
