@@ -1,0 +1,81 @@
+ansup(1) -- ansible powered updater
+===================================
+
+## SYNOPSIS
+
+  `ansup` [-d] [-h] [-s] [-v] [-i <INVENTORY>] <DIR>
+
+## DESCRIPTION
+
+Starts a program that listens for directives on standard input. When it
+receives any then executes appropriate ansible playbook from specified
+directory <DIR>.
+
+If `-i` option is provided then custom inventory <INVENTORY> will be used
+in the provisioning. Otherwise ansible will use its default inventory file
+defined in the global configuration.
+
+## OPTIONS
+
+  * `-d`:
+    Enables debug mode.
+
+  * `-h`:
+    Shows help screen.
+
+  * `-i` <INVENTORY>:
+    Ansible inventory file that should be used.
+
+  * `-s`:
+    Silent mode. Logs will be not produced.
+
+  * `-v`:
+    Print version number and exit.
+
+## EXAMPLES
+
+Given an example:
+
+    $ echo sync repo=bacon | ansup ~/playbooks
+
+It will execute `sync.yml` playbook located in `~/playbooks` directory, with
+extra variable `repo` set to `bacon`. Under the hood more or less following
+command will be executed:
+
+    $ ansible-playbook -s -c local -e "repo=bacon" ~/playbooks/sync.yml
+
+Use `-i` to specify custom inventory file:
+
+    $ ansup -i~/production ~/playbooks
+
+## REPORTING BUGS
+
+If you found any problem with the application, please start an issue on
+**project's issues page**[2].
+
+## AUTHOR
+
+Chris Kowalik, chris@nu7hat.ch.
+
+## COPYRIGHT
+
+Copyright 2013 (C) by VividCortext, support@vividcortex.com.<br />
+Released under MIT License.
+
+## SEE ALSO
+
+ansible-playbook(1), ansible(1)
+
+## NOTES
+
+  1. Project home:<br />
+     http://mirstack.org/ansup/
+
+  2. Project's issue tracker:<br />
+     https://github.com/mirstack/ansup/issues
+
+  3. Git repository:<br />
+     https://github.com/mirstack/ansup.git
+
+  4. VividCortex support list:<br />
+     support@vividcortex.com
