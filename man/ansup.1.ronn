@@ -48,6 +48,11 @@ Use `-i` to specify custom inventory file:
 
     $ ansup -i~/production ~/playbooks
 
+If you want to turn the app into a continuously listening daemon then pipe it
+with other long running task, like `tail` for example:
+
+    $ tail -f /tmp/updates | ansup ~/playbooks
+
 ## REPORTING BUGS
 
 If you found any problem with the application, please start an issue on
