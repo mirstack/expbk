@@ -3,11 +3,11 @@ language: python
 python: 
   - 2.7
 
-install:
-  - pip install 'ansible>=1.2'
-
 before_install:
   - sudo apt-get install -qq bc
+
+install:
+  - pip install -q 'ansible>=1.2'
 
 script:
   - make test
